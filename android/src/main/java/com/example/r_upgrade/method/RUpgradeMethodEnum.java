@@ -24,6 +24,7 @@ public enum RUpgradeMethodEnum implements IRUpgradeMethodHandler {
             upgradeManager.upgrade((String) call.argument("url"),
                     (Map<String, String>) call.argument("header"),
                     (String) call.argument("fileName"),
+                    (Boolean) call.argument("notificationClickable"),
                     (Integer) call.argument("notificationVisibility"),
                     (Integer) call.argument("notificationStyle"),
                     (Integer) call.argument("installType"),

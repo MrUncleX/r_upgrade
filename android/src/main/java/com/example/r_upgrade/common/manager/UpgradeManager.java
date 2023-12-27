@@ -78,6 +78,7 @@ public class UpgradeManager extends ContextWrapper {
     private BaseInstallFactory installFactory;
 
     private boolean isUseDownloadManager = false;
+    private boolean notificationClickable = true;
 
     private Integer notificationVisibility = 0;
     private UpgradeNotificationStyle notificationStyle = UpgradeNotificationStyle.none;
@@ -112,9 +113,10 @@ public class UpgradeManager extends ContextWrapper {
     }
 
 
-    public void upgrade(final String url, final Map<String, String> header, final String apkName, final Integer notificationVisibility, Integer notificationStyle, Integer installType, Boolean useDownloadManager, final Integer upgradeFlavor, final MethodChannel.Result result) {
+    public void upgrade(final String url, final Map<String, String> header, final String apkName,final Boolean notificationClickable, final Integer notificationVisibility, Integer notificationStyle, Integer installType, Boolean useDownloadManager, final Integer upgradeFlavor, final MethodChannel.Result result) {
         installFactory = installTypeToFactory(installType);
         this.isUseDownloadManager = Boolean.TRUE == useDownloadManager;
+        this.notificationClickable = Boolean.TRUE == notificationClickable;
         if (notificationStyle != null) {
             this.notificationStyle = UpgradeNotificationStyle.values()[notificationStyle];
         } else {
@@ -413,11 +415,11 @@ public class UpgradeManager extends ContextWrapper {
                     if (!isUseDownloadManager) {
                         String contentText = notificationStyle == null ? "" : notificationStyle.getNotificationStyleString(context, speed, planTime);
                         if ((status == DownloadStatus.STATUS_RUNNING.getValue() || status == DownloadStatus.STATUS_SUCCESSFUL.getValue()) && notificationVisibility == 1) {
-                            UpgradeNotification.createNotification(context, (int) id, apkName, max_length == -1, percent, contentText, status);
+                            UpgradeNotification.createNotification(context, (int) id, apkName, max_length == -1, percent, contentText, status,notificationClickable);
                         } else if (notificationVisibility == 0) {
-                            UpgradeNotification.createNotification(context, (int) id, apkName, max_length == -1, percent, contentText, status);
+                            UpgradeNotification.createNotification(context, (int) id, apkName, max_length == -1, percent, contentText, status,notificationClickable);
                         } else if (status == DownloadStatus.STATUS_SUCCESSFUL.getValue() && notificationVisibility == 3) {
-                            UpgradeNotification.createNotification(context, (int) id, apkName, max_length == -1, percent, contentText, status);
+                            UpgradeNotification.createNotification(context, (int) id, apkName, max_length == -1, percent, contentText, status,notificationClickable);
                         }
                         if (status == DownloadStatus.STATUS_SUCCESSFUL.getValue()) {
                             installApkById((int) id);

@@ -111,6 +111,7 @@ class RUpgrade {
     String url, {
     Map<String, String>? header,
     String? fileName,
+    bool notificationClickable = true,
     NotificationVisibility notificationVisibility =
         NotificationVisibility.VISIBILITY_VISIBLE,
     NotificationStyle notificationStyle = NotificationStyle.planTime,
@@ -123,6 +124,7 @@ class RUpgrade {
       'url': url,
       "header": header,
       "fileName": fileName,
+      "notificationClickable": notificationClickable,
       "notificationVisibility": notificationVisibility.value,
       "notificationStyle": notificationStyle.index,
       "installType": installType.index,

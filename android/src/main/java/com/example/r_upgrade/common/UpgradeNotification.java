@@ -20,7 +20,7 @@ public class UpgradeNotification {
 
     private static String CHANNEL_NAME;
 
-    public static void createNotification(Context context, int id, String title,boolean indeterminate, Double percent, String contentText, int status) {
+    public static void createNotification(Context context, int id, String title,boolean indeterminate, Double percent, String contentText, int status, boolean notificationClickable) {
         if (CHANNEL_NAME == null) {
             try {
                 CHANNEL_NAME = context.getPackageName() + "_notification";
@@ -36,9 +36,11 @@ public class UpgradeNotification {
         Notification notification;
         if (status == DownloadStatus.STATUS_RUNNING.getValue()) {
             Intent pauseIntent = new Intent();
-            pauseIntent.setAction(UpgradeService.RECEIVER_PAUSE);
-            pauseIntent.putExtra(UpgradeManager.PARAMS_ID, id);
-            pauseIntent.putExtra(UpgradeManager.PARAMS_PACKAGE, context.getPackageName());
+            if(notificationClickable) {
+                pauseIntent.setAction(UpgradeService.RECEIVER_PAUSE);
+                pauseIntent.putExtra(UpgradeManager.PARAMS_ID, id);
+                pauseIntent.putExtra(UpgradeManager.PARAMS_PACKAGE, context.getPackageName());
+            }
 
 
             PendingIntent pausePendingIntent =
@@ -55,9 +57,11 @@ public class UpgradeNotification {
                     .build();
         } else if (status == DownloadStatus.STATUS_SUCCESSFUL.getValue()) {
             Intent installIntent = new Intent();
-            installIntent.setAction(UpgradeManager.DOWNLOAD_INSTALL);
-            installIntent.putExtra(UpgradeService.DOWNLOAD_ID, id);
-            installIntent.putExtra(UpgradeManager.PARAMS_PACKAGE, context.getPackageName());
+            if(notificationClickable) {
+                installIntent.setAction(UpgradeManager.DOWNLOAD_INSTALL);
+                installIntent.putExtra(UpgradeService.DOWNLOAD_ID, id);
+                installIntent.putExtra(UpgradeManager.PARAMS_PACKAGE, context.getPackageName());
+            }
 
             PendingIntent installPendingIntent =
                     PendingIntent.getBroadcast(context, 0, installIntent, getPendingIntentFlag());
@@ -71,9 +75,11 @@ public class UpgradeNotification {
                     .build();
         } else if (status == DownloadStatus.STATUS_PAUSED.getValue()) {
             Intent reStartIntent = new Intent();
-            reStartIntent.setAction(UpgradeService.RECEIVER_RESTART);
-            reStartIntent.putExtra(UpgradeManager.PARAMS_ID, id);
-            reStartIntent.putExtra(UpgradeManager.PARAMS_PACKAGE, context.getPackageName());
+            if(notificationClickable) {
+                reStartIntent.setAction(UpgradeService.RECEIVER_RESTART);
+                reStartIntent.putExtra(UpgradeManager.PARAMS_ID, id);
+                reStartIntent.putExtra(UpgradeManager.PARAMS_PACKAGE, context.getPackageName());
+            }
 
             PendingIntent reStartPendingIntent =
                     PendingIntent.getBroadcast(context, 0, reStartIntent, getPendingIntentFlag());
@@ -87,9 +93,11 @@ public class UpgradeNotification {
                     .build();
         } else if (status == DownloadStatus.STATUS_FAILED.getValue()) {
             Intent failedIntent = new Intent();
-            failedIntent.setAction(UpgradeService.RECEIVER_RESTART);
-            failedIntent.putExtra(UpgradeManager.PARAMS_ID, id);
-            failedIntent.putExtra(UpgradeManager.PARAMS_PACKAGE, context.getPackageName());
+            if(notificationClickable) {
+                failedIntent.setAction(UpgradeService.RECEIVER_RESTART);
+                failedIntent.putExtra(UpgradeManager.PARAMS_ID, id);
+                failedIntent.putExtra(UpgradeManager.PARAMS_PACKAGE, context.getPackageName());
+            }
 
             PendingIntent reStartPendingIntent =
                     PendingIntent.getBroadcast(context, 0, failedIntent, getPendingIntentFlag());

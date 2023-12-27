@@ -155,6 +155,7 @@ public class UpgradeService extends Service {
                 isFirst = false;
                 return;
             }
+            runnable.handlerDownloadFinish(false);
             runnable.pause(-1);
             isFirst = false;
             RUpgradeLogger.get().d(TAG, "onReceive: 当前网络已断开");
@@ -407,6 +408,8 @@ public class UpgradeService extends Service {
             intent.putExtra(PARAMS_PACKAGE, upgradeService.getPackageName());
             upgradeService.sendBroadcast(intent);
             sqLite.delete(id);
+            lastCurrentLength = 0;
+            isFinish = true;
         }
 
         private void handlerDownloadPause() {
@@ -429,18 +432,22 @@ public class UpgradeService extends Service {
             }
         }
 
-        private void handlerDownloadFinish() {
+        private void handlerDownloadFinish(boolean isSuccess) {
             RUpgradeLogger.get().d(TAG, "handlerDownloadFinish: finish");
             cancelTimer();
-            Intent intent = new Intent();
-            intent.setAction(DOWNLOAD_STATUS);
-            intent.putExtra(PARAMS_ID, id);
-            intent.putExtra(PARAMS_APK_NAME, apkName);
-            intent.putExtra(PARAMS_PATH, downloadFile.getPath());
-            intent.putExtra(PARAMS_STATUS, DownloadStatus.STATUS_SUCCESSFUL.getValue());
-            intent.putExtra(PARAMS_PACKAGE, upgradeService.getPackageName());
-            upgradeService.sendBroadcast(intent);
-            sqLite.update(id, null, null, DownloadStatus.STATUS_SUCCESSFUL.getValue());
+            if(isSuccess) {
+                Intent intent = new Intent();
+                intent.setAction(DOWNLOAD_STATUS);
+                intent.putExtra(PARAMS_ID, id);
+                intent.putExtra(PARAMS_APK_NAME, apkName);
+                intent.putExtra(PARAMS_PATH, downloadFile.getPath());
+                intent.putExtra(PARAMS_STATUS, DownloadStatus.STATUS_SUCCESSFUL.getValue());
+                intent.putExtra(PARAMS_PACKAGE, upgradeService.getPackageName());
+                upgradeService.sendBroadcast(intent);
+                sqLite.update(id, null, null, DownloadStatus.STATUS_SUCCESSFUL.getValue());
+            }else{
+                sqLite.delete(id);
+            }
             lastCurrentLength = 0;
             isFinish = true;
         }
@@ -601,7 +608,7 @@ public class UpgradeService extends Service {
                 }
                 is.close();
                 if (isRunning) {
-                    handlerDownloadFinish();
+                    handlerDownloadFinish(true);
                 }
             } catch (Exception e) {
                 timer.cancel();
